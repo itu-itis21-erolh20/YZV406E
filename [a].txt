@@ -1,6 +1,6 @@
 https://www.emrehaninci.com/drone-gelistirme-ortami-kurulumu/
 linkteki kurulumları yaptıktan sonra 
-1- ardupilot-gazebo içideki models dosyasına model dosyaları fire dosyası dahil
+1- ardupilot-gazebo içideki models dosyasına model dosyaları (gimball_small_2d_dk, iris_with_ardupilot_dk, fire) atılacak
 2- iris_arducopter_runway_dk.world  ise world dosyasının içine atılacak
 3- aşağıdakiler yapılacak
 
