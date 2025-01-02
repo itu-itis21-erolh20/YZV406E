@@ -8,6 +8,8 @@ from cv_bridge import CvBridge
 import cv2
 import numpy as np
 import threading
+import math
+from geometry_msgs.msg import PoseStamped
 
 # Drone bağlantısı
 iha = connect("127.0.0.1:14550", wait_ready=True)
@@ -25,6 +27,9 @@ class FireDetectionNode(Node):
         self.fire_coords = None
         self.image_center = None  # Kameranın görüntü merkezi
         self.fire_center = None  # Ateşin görüntüdeki merkezi
+
+        self.fire_pose_publisher = self.create_publisher(PoseStamped, '/fire_position', 10)
+
 
     def listener_callback(self, msg):
         try:
@@ -52,6 +57,15 @@ class FireDetectionNode(Node):
                         self.get_logger().info("Ateş tespit edildi!")
                         self.fire_coords = self.get_fire_coordinates()
                         self.get_logger().info(f"Ateşin GPS koordinatları: {self.fire_coords}")
+
+                        pose_msg = PoseStamped()
+                        pose_msg.header.frame_id = "map"  # RViz için referans çerçeve
+                        pose_msg.header.stamp = self.get_clock().now().to_msg()
+                        pose_msg.pose.position.x = self.fire_coords[0]
+                        pose_msg.pose.position.y = self.fire_coords[1]
+                        pose_msg.pose.position.z = self.fire_coords[2]
+                        self.fire_pose_publisher.publish(pose_msg)
+
                 else:
                     self.fire_detected = False
             else:
@@ -78,10 +92,34 @@ class FireDetectionNode(Node):
     def get_fire_coordinates(self):
         """Drone'un GPS bilgilerini al ve ateşi tespit et."""
         current_location = iha.location.global_relative_frame
+        lat_ref = -35.363262
+        lon_ref = 149.165237
         fire_lat = current_location.lat
         fire_lon = current_location.lon
         fire_alt = 10
+        print("kordinat normal",  fire_lat, fire_lon)
+        x_gazebo, y_gazebo = self.gps_to_gazebo(fire_lat, fire_lon, lat_ref, lon_ref, 0, 0)
+        print("gazebo", x_gazebo, y_gazebo)
         return fire_lat, fire_lon, fire_alt
+    
+
+    def gps_to_gazebo(self, lat, lon, lat_ref, lon_ref, x_ref, y_ref):
+        # Constants
+        meters_per_deg_lat = 111320  # Approximate meters per degree latitude
+        meters_per_deg_lon = 111320 * math.cos(math.radians(lat_ref))  # Adjust for longitude
+
+        # Calculate offsets in meters
+        delta_lat = lat - lat_ref
+        delta_lon = lon - lon_ref
+        y_offset = delta_lat * meters_per_deg_lat
+        x_offset = delta_lon * meters_per_deg_lon
+
+        # Translate to Gazebo coordinates
+        x_gazebo = x_ref + x_offset
+        y_gazebo = y_ref + y_offset
+
+        return x_gazebo, y_gazebo
+    
 
 def takeoff(irtifa):
     while not iha.is_armable:
@@ -157,7 +195,9 @@ def main():
 
     komut.next = 0
     iha.mode = VehicleMode("AUTO")
-
+    # Hız ayarını belirle (m/s cinsinden)
+    iha.airspeed = 5  # İleri hız
+    iha.groundspeed = 5  # Yere göre hız
     while True:
         next_waypoint = komut.next
         print(f"Sıradaki komut {next_waypoint}")
