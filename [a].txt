@@ -17,3 +17,7 @@ yeni terminal aç
 
 python3 mission.py
 
+
+rviz
+ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:=/home/erdem/maps/project2_map.yaml
+
