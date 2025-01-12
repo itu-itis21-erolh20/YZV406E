@@ -106,3 +106,5 @@ pip3 install dronekit-sitl
 
 ## 9. Download Python_files Folder 
 
+Check path dependencies in the mission.py and run it
+---
