@@ -1,6 +1,6 @@
 # ArduPilot SITL and Gazebo Setup
 
-This document describes the steps required to install and configure ArduPilot SITL together with the Gazebo simulator. It also includes instructions for installing DroneKit.
+This document describes the steps required to install and configure ArduPilot SITL together with the Gazebo simulator. It also includes instructions for installing DroneKit. When you install all neededs you should replace /ardupilot_gazebo/models folder with our folder abd /ardupilot_gazebo/worlds folder with our world folder.
 
 ---
 
