@@ -6,7 +6,6 @@ This document describes the steps required to install and configure ArduPilot SI
 
 ## 1. Installing Git
 
-ArduPilot kaynak dosyalarını klonlayabilmek için öncelikle Git'i kurmanız gerekiyor.
 
 ```bash
 sudo apt-get update
