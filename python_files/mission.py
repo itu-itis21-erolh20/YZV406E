@@ -17,8 +17,8 @@ import os
 iha = connect("127.0.0.1:14550", wait_ready=True)
 
 class FireDetectionNode(Node):
-    def __init__(self):
-        super().__init__('fire_detection_node')
+    def _init_(self):
+        super()._init_('fire_detection_node')
         self.bridge = CvBridge()
         self.subscription = self.create_subscription(
             Image,
@@ -192,18 +192,25 @@ def start_simulation():
         ros_setup_path = "/opt/ros/foxy/setup.bash"  # Path to ROS 2 setup
         workspace_setup_path = "/home/erdem/ros2_ws/install/setup.bash"  # Path to workspace setup
 
-        # Run the launch command
-        process = subprocess.Popen(
+        # Launch turtlebot3_gazebo simulation
+        gazebo_process = subprocess.Popen(
             f"source {ros_setup_path} && source {workspace_setup_path} && ros2 launch turtlebot3_gazebo project.py x_pose:=-7.216780 y_pose:=-9.611480",
             shell=True,
             executable="/bin/bash",
         )
 
-        return process  # Return the subprocess
+        # Launch turtlebot3_navigation2
+        nav2_process = subprocess.Popen(
+            f"source {ros_setup_path} && source {workspace_setup_path} && ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:=/home/erdem/maps/project2_map.yaml",
+            shell=True,
+            executable="/bin/bash",
+        )
+
+        return gazebo_process, nav2_process  # Return both subprocesses
 
     except Exception as e:
         print(f"Error occurred while starting the simulation: {str(e)}")
-        return None
+        return None, None
 
 def publish_goal_pose(x_gazebo, y_gazebo):
     # Calculate Gazebo x and y coordinates using gps_to_gazebo
@@ -332,5 +339,5 @@ def main():
     sim_process.terminate()
     print("Simulation terminated.")
 
-if __name__ == '__main__':
-    main()
+if _name_ == '_main_':
+    main()
