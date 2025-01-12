@@ -86,31 +86,11 @@ cd build
 cmake ..
 make -j4
 sudo make install
-
-
-echo 'source /usr/share/gazebo/setup.sh' >> ~/.bashrc
-echo 'export GAZEBO_MODEL_PATH=~/ardupilot_gazebo/models' >> ~/.bashrc
-
-. ~/.bashrc
-
 ```
+
 ---
 
-## 8. Starting Gazebo Simulation and ArduPilot SITL
-
-```bash 
-gazebo --verbose worlds/iris_arducopter_runway.world
-cd ~/ardupilot/ArduCopter
-../Tools/autotest/sim_vehicle.py -f gazebo-iris --console --map
-
-export SVGA_VGPU10=0
-echo "export SVGA_VGPU10=0" >> ~/.bashrc
-
-
-```
----
-
-## 9. Installing DroneKit
+## 8. Installing DroneKit
 
 
 ```bash 
